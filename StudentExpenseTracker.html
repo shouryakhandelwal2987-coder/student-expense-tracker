@@ -1,0 +1,552 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Expense Tracker</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f5fa;
+    color: #263248;
+}
+
+header {
+    background: #243b64;
+    color: white;
+    padding: 22px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0 0 8px;
+}
+
+header p {
+    margin: 0;
+}
+
+.container {
+    width: 92%;
+    max-width: 1100px;
+    margin: 25px auto;
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px #0000000d;
+}
+
+.card h3 {
+    margin: 0 0 12px;
+    font-size: 15px;
+    color: #65728a;
+}
+
+.amount {
+    font-size: 25px;
+    font-weight: bold;
+    color: #243b64;
+}
+
+.panel {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    margin-bottom: 22px;
+    box-shadow: 0 3px 12px #0000000d;
+}
+
+h2 {
+    margin-top: 0;
+    font-size: 21px;
+}
+
+form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 11px;
+    border-radius: 7px;
+    border: 1px solid #d4dbe7;
+    font-size: 14px;
+}
+
+button {
+    border: none;
+    background: #315da8;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.88;
+}
+
+.submit-button {
+    align-self: end;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filters input, .filters select {
+    flex: 1;
+    min-width: 150px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 650px;
+}
+
+th, td {
+    text-align: left;
+    padding: 13px;
+    border-bottom: 1px solid #e5e9f0;
+}
+
+th {
+    background: #edf2fa;
+}
+
+.delete-button {
+    background: #d94848;
+    padding: 8px 10px;
+    width: auto;
+}
+
+.empty {
+    text-align: center;
+    padding: 25px;
+    color: #7a8496;
+}
+
+.category-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.category-item {
+    background: #edf2fa;
+    padding: 14px;
+    border-radius: 8px;
+}
+
+.category-item strong {
+    display: block;
+    margin-bottom: 7px;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #65728a;
+}
+
+@media (max-width: 500px) {
+    .container {
+        width: 95%;
+    }
+
+    .panel {
+        padding: 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Student Expense Tracker</h1>
+    <p>Manage your daily expenses smartly!</p>
+</header>
+
+<main class="container">
+
+    <section class="summary">
+        <div class="card">
+            <h3>Total Expenses</h3>
+            <div class="amount" id="total">₹0.00</div>
+        </div>
+
+        <div class="card">
+            <h3>Number of Transactions</h3>
+            <div class="amount" id="count">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Highest Expense</h3>
+            <div class="amount" id="highest">₹0.00</div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Add New Expense</h2>
+
+        <form id="expenseForm">
+            <div>
+                <label for="title">Expense Name</label>
+                <input id="title" type="text"
+                    placeholder="e.g. Lunch" required maxlength="80">
+            </div>
+
+            <div>
+                <label for="amount">Amount (₹)</label>
+                <input id="amount" type="number"
+                    placeholder="Enter amount" min="0.01"
+                    step="0.01" required>
+            </div>
+
+            <div>
+                <label for="category">Category</label>
+                <select id="category" required>
+                    <option value="Food">Food</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Education">Education</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Bills">Bills</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="date">Date</label>
+                <input id="date" type="date" required>
+            </div>
+
+            <div class="submit-button">
+                <button type="submit">+ Add Expense</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel">
+        <h2>Expense Records</h2>
+
+        <div class="filters">
+            <input id="search" type="search"
+                placeholder="Search expense name...">
+
+            <select id="categoryFilter">
+                <option value="All">All Categories</option>
+                <option value="Food">Food</option>
+                <option value="Travel">Travel</option>
+                <option value="Education">Education</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Bills">Bills</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <select id="sort">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="high">Amount: High to Low</option>
+                <option value="low">Amount: Low to High</option>
+                <option value="name">Name: A to Z</option>
+            </select>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Expense</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="expenseTable"></tbody>
+            </table>
+        </div>
+
+        <p id="emptyMessage" class="empty">
+            No expenses added yet.
+        </p>
+    </section>
+
+    <section class="panel">
+        <h2>Category-wise Analysis</h2>
+        <div id="categoryAnalysis" class="category-list"></div>
+    </section>
+
+    <section class="panel">
+        <h2>DSA Concepts Used</h2>
+        <p><strong>Array:</strong> Stores expense records.</p>
+        <p><strong>Searching:</strong> Finds expenses by name.</p>
+        <p><strong>Sorting:</strong> Arranges expenses by date, amount, or name.</p>
+        <p><strong>Algorithms:</strong> Calculate total spending and highest expense.</p>
+    </section>
+
+    <section class="panel">
+        <button type="button" id="clearButton">
+            Clear All Expenses
+        </button>
+    </section>
+
+</main>
+
+<footer>
+    Student Expense Tracker | DSA Mini Project
+</footer>
+
+<script>
+const form = document.getElementById("expenseForm");
+const titleInput = document.getElementById("title");
+const amountInput = document.getElementById("amount");
+const categoryInput = document.getElementById("category");
+const dateInput = document.getElementById("date");
+const searchInput = document.getElementById("search");
+const categoryFilter = document.getElementById("categoryFilter");
+const sortInput = document.getElementById("sort");
+const tableBody = document.getElementById("expenseTable");
+
+let expenses = [];
+
+try {
+    const saved = localStorage.getItem("studentExpenses");
+    const parsed = saved ? JSON.parse(saved) : [];
+
+    if (Array.isArray(parsed)) {
+        expenses = parsed.filter(item =>
+            item &&
+            typeof item.id === "string" &&
+            typeof item.title === "string" &&
+            typeof item.amount === "number" &&
+            Number.isFinite(item.amount) &&
+            item.amount > 0 &&
+            ["Food", "Travel", "Education", "Shopping",
+             "Bills", "Other"].includes(item.category) &&
+            typeof item.date === "string"
+        );
+    }
+} catch (error) {
+    expenses = [];
+}
+
+function saveExpenses() {
+    try {
+        localStorage.setItem(
+            "studentExpenses",
+            JSON.stringify(expenses)
+        );
+    } catch (error) {
+        alert("Unable to save data in this browser.");
+    }
+}
+
+function money(value) {
+    return "₹" + value.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function setToday() {
+    const now = new Date();
+    const localDate = new Date(
+        now.getTime() - now.getTimezoneOffset() * 60000
+    ).toISOString().slice(0, 10);
+
+    dateInput.value = localDate;
+}
+
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const title = titleInput.value.trim();
+    const amount = Number(amountInput.value);
+    const category = categoryInput.value;
+    const date = dateInput.value;
+
+    if (!title || !Number.isFinite(amount) || amount <= 0 || !date) {
+        alert("Please enter valid expense details.");
+        return;
+    }
+
+    expenses.push({
+        id: Date.now().toString() + Math.random().toString(36).slice(2),
+        title: title,
+        amount: Math.round(amount * 100) / 100,
+        category: category,
+        date: date
+    });
+
+    saveExpenses();
+    form.reset();
+    setToday();
+    renderExpenses();
+});
+
+function renderExpenses() {
+    const query = searchInput.value.trim().toLowerCase();
+    const selectedCategory = categoryFilter.value;
+
+    let filtered = expenses.filter(expense => {
+        const matchesName = expense.title.toLowerCase().includes(query);
+        const matchesCategory =
+            selectedCategory === "All" ||
+            expense.category === selectedCategory;
+
+        return matchesName && matchesCategory;
+    });
+
+    const sortType = sortInput.value;
+
+    if (sortType === "newest") {
+        filtered.sort((a, b) => b.date.localeCompare(a.date));
+    } else if (sortType === "oldest") {
+        filtered.sort((a, b) => a.date.localeCompare(b.date));
+    } else if (sortType === "high") {
+        filtered.sort((a, b) => b.amount - a.amount);
+    } else if (sortType === "low") {
+        filtered.sort((a, b) => a.amount - b.amount);
+    } else if (sortType === "name") {
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    tableBody.replaceChildren();
+
+    document.getElementById("emptyMessage").style.display =
+        filtered.length === 0 ? "block" : "none";
+
+    filtered.forEach(expense => {
+        const row = document.createElement("tr");
+
+        function addCell(text) {
+            const cell = document.createElement("td");
+            cell.textContent = text;
+            row.appendChild(cell);
+            return cell;
+        }
+
+        addCell(expense.title);
+        addCell(expense.category);
+        addCell(expense.date);
+        addCell(money(expense.amount));
+
+        const actionCell = addCell("");
+        const deleteButton = document.createElement("button");
+
+        deleteButton.textContent = "Delete";
+        deleteButton.className = "delete-button";
+        deleteButton.type = "button";
+
+        deleteButton.addEventListener("click", function() {
+            expenses = expenses.filter(item => item.id !== expense.id);
+            saveExpenses();
+            renderExpenses();
+        });
+
+        actionCell.appendChild(deleteButton);
+        tableBody.appendChild(row);
+    });
+
+    const total = expenses.reduce(
+        (sum, expense) => sum + expense.amount, 0
+    );
+
+    const highest = expenses.reduce(
+        (max, expense) => Math.max(max, expense.amount), 0
+    );
+
+    document.getElementById("total").textContent = money(total);
+    document.getElementById("count").textContent = expenses.length;
+    document.getElementById("highest").textContent = money(highest);
+
+    renderCategoryAnalysis();
+}
+
+function renderCategoryAnalysis() {
+    const categories = [
+        "Food", "Travel", "Education",
+        "Shopping", "Bills", "Other"
+    ];
+
+    const analysis = document.getElementById("categoryAnalysis");
+    analysis.replaceChildren();
+
+    categories.forEach(category => {
+        const total = expenses
+            .filter(item => item.category === category)
+            .reduce((sum, item) => sum + item.amount, 0);
+
+        const box = document.createElement("div");
+        box.className = "category-item";
+
+        const heading = document.createElement("strong");
+        heading.textContent = category;
+
+        const value = document.createElement("span");
+        value.textContent = money(total);
+
+        box.appendChild(heading);
+        box.appendChild(value);
+        analysis.appendChild(box);
+    });
+}
+
+searchInput.addEventListener("input", renderExpenses);
+categoryFilter.addEventListener("change", renderExpenses);
+sortInput.addEventListener("change", renderExpenses);
+
+document.getElementById("clearButton").addEventListener("click", function() {
+    if (expenses.length === 0) {
+        alert("There are no expenses to clear.");
+        return;
+    }
+
+    if (confirm("Are you sure you want to delete all expenses?")) {
+        expenses = [];
+        saveExpenses();
+        renderExpenses();
+    }
+});
+
+setToday();
+renderExpenses();
+</script>
+
+</body>
+</html>
